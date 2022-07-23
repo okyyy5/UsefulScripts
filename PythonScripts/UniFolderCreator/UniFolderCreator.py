@@ -1,10 +1,15 @@
 import os
+import sys
 from sys import exit
 from pathlib import Path
 
 # Directory path to wherever you have your folder for the semester.
 # Eg 'C:\Users\Tim\Google Drive\2023 Sem 2'
-FOLDER_DIR: Path = Path.cwd()
+try:
+    FOLDER_DIR: Path = Path(sys.argv[1])
+except Exception:
+    print("ERROR:\tThe entered path is not valid")
+    exit()
 SEMESTER_WEEKS: int = 12 # Modify this if needed
 DRY_RUN: bool = True
 
