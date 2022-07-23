@@ -8,7 +8,7 @@ Repository for various scripts that can help to automate tasks in everyday life.
 
 #### Python Scripts
 
-**UniFolderCreator -** As the name suggests, this is small Python script to create folders for each week in each unit that a student may have in University. Tested on Python 3.10 but you can probably get away with less as long as it's Python 3.
+**UniFolderCreator -** As the name suggests, this is a small Python script to create folders for each week in each unit that a student may have in university. Tested on Python 3.10 but you can probably get away with less as long as it's Python 3.
 
 ***
 
