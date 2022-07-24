@@ -45,9 +45,8 @@ def main() -> None:
                 else:
                     print(f"INFO:\tFolder {folder} successfully created.")
                     
-    except Exception as e:
+    except Exception:
         print("ERROR:\tThe entered path is not valid")
-        print(e)
         exit()
 
     # Create a subfolder for each week of the semester for each subject folder.
