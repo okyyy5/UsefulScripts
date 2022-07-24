@@ -1,16 +1,22 @@
 import os
+import sys
 from sys import exit
 from pathlib import Path
 
-# Directory path to wherever you have your folder for the semester.
-# Eg 'C:\Users\Tim\Google Drive\2023 Sem 2'
-FOLDER_DIR: Path = Path.cwd()
 SEMESTER_WEEKS: int = 12 # Modify this if needed
 DRY_RUN: bool = True
 
 def main() -> None:
+    # Directory path to wherever you have your folder for the semester.
+    # Eg 'C:\Users\Tim\Google Drive\2023 Sem 2'
+    try:
+        folder_dir: Path = Path(sys.argv[1])
+    except Exception:
+        print("ERROR:\tThe entered path is not valid")
+        exit()
+
     # Create a subfolder for each week of the semester for each subject folder.
-    subs = get_subdirectories(FOLDER_DIR)
+    subs = get_subdirectories(folder_dir)
 
     if len(subs) == 0:
         print("ERROR:\tCreate the main folders for your respective classes before running script!")
