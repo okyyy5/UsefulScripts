@@ -1,17 +1,72 @@
+import typer
 import os
 import sys
 from sys import exit
 from pathlib import Path
 
-SEMESTER_WEEKS: int = 12 # Modify this if needed
-DRY_RUN: bool = True
+app = typer.Typer(add_completion=False)
 
-def main() -> None:
+_dry_run: bool = False
+SEMESTER_WEEKS: int = 12 # Modify this if needed
+
+# Credit: https://stackoverflow.com/a/45599996
+# Prints a directory tree after running
+def realname(path, root=None):
+    if root is not None:
+        path=os.path.join(root, path)
+    result=os.path.basename(path)
+    if os.path.islink(path):
+        realpath=os.readlink(path)
+        result= '%s -> %s' % (os.path.basename(path), realpath)
+    return result
+
+def ptree(startpath, depth=-1):
+    prefix=0
+    if startpath != '/':
+        if startpath.endswith('/'): startpath=startpath[:-1]
+        prefix=len(startpath)
+    for root, dirs, files in os.walk(startpath):
+        level = root[prefix:].count(os.sep)
+        if depth >-1 and level > depth: continue
+        indent=subindent =''
+        if level > 0:
+            indent = '|   ' * (level-1) + '|-- '
+        subindent = '|   ' * (level) + '|-- '
+        print('{}{}/'.format(indent, realname(root)))
+        # print dir only if symbolic link; otherwise, will be printed as root
+        for d in dirs:
+            if os.path.islink(os.path.join(root, d)):
+                print('{}{}'.format(subindent, realname(d, root=root)))
+        for f in files:
+            print('{}{}'.format(subindent, realname(f, root=root)))
+
+@app.command()
+def folder_directory(directory: str = typer.Argument(None, help="Directory to create folders at."),
+                        units: str = typer.Argument(None, help="Set of units provided as a string seperated by a space e.g. 'IFB102 IFB104'.", rich_help_panel="Secondary Arguments"), 
+                            dry_run: bool = typer.Option(False, "--dry-run", "-dr", help="Run the script without creating any folders.")):
+    """
+    Create a set of week folders (1-12) for UNITS at DIRECTORY
+    """
+    global _dry_run 
+
+    if directory[0] != '/':
+        print("ERROR:\tDirectory must start with a '/' or '~/'")
+        exit()
+
+    if dry_run:
+        _dry_run = True
+
+    main(Path(directory), units)
+
+def main(folder_dir: Path, units: str) -> None: 
+    sub_folders: list = []
+
     # Directory path to wherever you have your folder for the semester.
     # Eg 'C:\Users\Tim\Google Drive\2023 Sem 2'
     try:
-        folder_dir: Path = Path(get_arg(1))
-        sub_folders: list = get_arg(2).split()
+        if units != None:
+            sub_folders: list = units.split()
+
 
         # Check if chosen DIR doesn't exist
         if not folder_dir.exists():
@@ -58,6 +113,9 @@ def main() -> None:
         
     for sub in subs:
         make_directories(sub, SEMESTER_WEEKS)
+    
+    print("SUCCESS: Unit structure has been created")
+    ptree(f'{folder_dir}')    
 
 def get_subdirectories(directory: Path) -> list[Path]:
     '''Returns each top-level subdirectory in a folder.'''
@@ -73,9 +131,9 @@ def make_directories(parent: Path, weeks: int) -> None:
             print(f"WARNING:\tFolder {full_path} already exists!")
             pass
         else:
-            # print(f"INFO:\tFolder {full_path} being created...")
+            print(f"INFO:\tFolder {full_path} being created...")
             try:
-                if not DRY_RUN:
+                if not _dry_run:
                     full_path.mkdir(parents=True, exist_ok=True)
                 else:
                     print(f"INFO: Dry run, pretending we created {full_path}...")
@@ -84,14 +142,5 @@ def make_directories(parent: Path, weeks: int) -> None:
             else:
                 print(f"INFO:\tFolder {full_path} successfully created.")
 
-def get_arg(index):
-    try:
-        sys.argv[index]
-    except IndexError:
-        return ''
-    else:
-        return sys.argv[index]
-
-
 if __name__ == '__main__':
-    main()
+    app() 
