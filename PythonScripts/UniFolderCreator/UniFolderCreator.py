@@ -49,6 +49,20 @@ def folder_directory(directory: str = typer.Argument(None, help="Directory to cr
     """
     global _dry_run 
 
+    if directory == None:
+        print("WARNING:\tNo directory given, would you like to default to '~/' ($HOME)?")
+        answer = input("(y/n): ")
+
+        while answer not in ["y", "n"]:
+            print("Please enter 'y' or 'n'.")
+            answer = input("(y/n): ")
+
+        if answer == "n":
+            print("Please restart the application to enter a new path")
+            exit()
+        else:
+            directory = '~/'
+            
     if directory[0] != '/':
         print("ERROR:\tDirectory must start with a '/' or '~/'")
         exit()
