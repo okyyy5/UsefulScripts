@@ -104,8 +104,7 @@ def main(folder_dir: Path, units: str) -> None:
                 else:
                     print(coloured_message("blue", f"INFO: Folder {folder} already exists."))
                     
-    except Exception as e:
-        print(e)
+    except Exception:
         print(coloured_message("red", "ERROR:\tThe entered path is not valid"))
         exit()
 
