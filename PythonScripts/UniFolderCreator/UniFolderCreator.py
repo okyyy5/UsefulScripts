@@ -4,7 +4,7 @@ import sys
 from sys import exit
 from pathlib import Path
 
-app = typer.Typer()
+app = typer.Typer(add_completion=False)
 
 _dry_run: bool = False
 SEMESTER_WEEKS: int = 12 # Modify this if needed
@@ -131,7 +131,7 @@ def make_directories(parent: Path, weeks: int) -> None:
             print(f"WARNING:\tFolder {full_path} already exists!")
             pass
         else:
-            # print(f"INFO:\tFolder {full_path} being created...")
+            print(f"INFO:\tFolder {full_path} being created...")
             try:
                 if not _dry_run:
                     full_path.mkdir(parents=True, exist_ok=True)
