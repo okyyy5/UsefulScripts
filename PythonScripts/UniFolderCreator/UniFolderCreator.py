@@ -140,14 +140,5 @@ def make_directories(parent: Path, weeks: int) -> None:
             else:
                 print(f"INFO:\tFolder {full_path} successfully created.")
 
-def get_arg(index):
-    try:
-        sys.argv[index]
-    except IndexError:
-        return ''
-    else:
-        return sys.argv[index]
-
-
 if __name__ == '__main__':
     app() 
