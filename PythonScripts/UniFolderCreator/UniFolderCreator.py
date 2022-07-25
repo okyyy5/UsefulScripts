@@ -1,10 +1,13 @@
 import typer
 import os
+from termcolor import colored
+import colorama
 import sys
 from sys import exit
 from pathlib import Path
 
 app = typer.Typer(add_completion=False)
+colorama.init()
 
 _dry_run: bool = False
 SEMESTER_WEEKS: int = 12 # Modify this if needed
@@ -50,7 +53,7 @@ def folder_directory(directory: str = typer.Argument(None, help="Directory to cr
     global _dry_run 
 
     if directory[0] != '/':
-        print("ERROR:\tDirectory must start with a '/' or '~/'")
+        print(coloured_message("red", "ERROR: Directory must start with a '/' or '~/'"))
         exit()
 
     if dry_run:
@@ -61,8 +64,6 @@ def folder_directory(directory: str = typer.Argument(None, help="Directory to cr
 def main(folder_dir: Path, units: str) -> None: 
     sub_folders: list = []
 
-    # Directory path to wherever you have your folder for the semester.
-    # Eg 'C:\Users\Tim\Google Drive\2023 Sem 2'
     try:
         if units != None:
             sub_folders: list = units.split()
@@ -70,7 +71,7 @@ def main(folder_dir: Path, units: str) -> None:
 
         # Check if chosen DIR doesn't exist
         if not folder_dir.exists():
-            print(f"ERROR:\tFolder {folder_dir} does not exist! Would you like to create it?")
+            print(coloured_message("yellow", f"WARNING: Folder {folder_dir} does not exist! Would you like to create it?"))
 
             answer = input("(y/n): ")
 
@@ -85,37 +86,42 @@ def main(folder_dir: Path, units: str) -> None:
                 try:
                     os.makedirs(folder_dir)
                 except Exception as e:
-                    print(f"ERROR:\tFolder {folder_dir} could not be created. {str(e)}")
+                    print(coloured_message("red", f"ERROR: Folder {folder_dir} could not be created. {str(e)}"))
                     exit()
                 else:
-                    print(f"INFO:\tFolder {folder_dir} successfully created.")
+                    print(coloured_message("green", f"SUCCESS: Folder {folder_dir} successfully created."))
 
         # Create a subdirectory for each specified unit
         if len(sub_folders) > 0:
             for folder in sub_folders:
-                try:
-                    os.makedirs(f'{folder_dir}/{folder}')
-                except Exception as e:
-                    print(f"ERROR:\tFolder {folder} could not be created. {str(e)}")
+                if not Path(f'{folder_dir}/{folder}').exists(): 
+                    try:
+                        os.makedirs(f'{folder_dir}/{folder}')
+                    except Exception as e:
+                        print(coloured_message("red", f"ERROR: Folder {folder} could not be created. {str(e)}"))
+                    else:
+                        print(coloured_message("green", f"SUCCESS: Folder {folder} successfully created."))
                 else:
-                    print(f"INFO:\tFolder {folder} successfully created.")
+                    print(coloured_message("blue", f"INFO: Folder {folder} already exists."))
                     
-    except Exception:
-        print("ERROR:\tThe entered path is not valid")
+    except Exception as e:
+        print(e)
+        print(coloured_message("red", "ERROR:\tThe entered path is not valid"))
         exit()
 
     # Create a subfolder for each week of the semester for each subject folder.
     subs = get_subdirectories(folder_dir)
 
     if len(subs) == 0:
-        print("ERROR:\tCreate the main folders for your respective classes before running script!")
+        print(coloured_message("red", "ERROR: Create the main folders for your respective classes before running script!"))
         exit()
         
     for sub in subs:
         make_directories(sub, SEMESTER_WEEKS)
-    
-    print("SUCCESS: Unit structure has been created")
-    ptree(f'{folder_dir}')    
+   
+    print(coloured_message("blue", "\nINFO: Unit structure has been created"))
+    ptree(f'{folder_dir}')
+    print("")
 
 def get_subdirectories(directory: Path) -> list[Path]:
     '''Returns each top-level subdirectory in a folder.'''
@@ -128,19 +134,17 @@ def make_directories(parent: Path, weeks: int) -> None:
         full_path: Path = parent.joinpath(new_folder_name)
 
         if full_path.exists():
-            print(f"WARNING:\tFolder {full_path} already exists!")
+            print(coloured_message("yellow", f"WARNING: Folder {full_path} already exists!"))
             pass
         else:
-            print(f"INFO:\tFolder {full_path} being created...")
             try:
                 if not _dry_run:
                     full_path.mkdir(parents=True, exist_ok=True)
-                else:
-                    print(f"INFO: Dry run, pretending we created {full_path}...")
             except Exception as e:
-                print(f"ERROR:\tFolder {full_path} could not be created. {str(e)}")
-            else:
-                print(f"INFO:\tFolder {full_path} successfully created.")
+                print(coloured_message("red", f"ERROR:\tFolder {full_path} could not be created. {str(e)}"))
+
+def coloured_message(colour: str, text: str) -> str:
+    return colored(text, colour)
 
 if __name__ == '__main__':
     app() 
