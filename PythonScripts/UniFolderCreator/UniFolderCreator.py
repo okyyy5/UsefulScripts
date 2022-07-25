@@ -41,9 +41,12 @@ def ptree(startpath, depth=-1):
             print('{}{}'.format(subindent, realname(f, root=root)))
 
 @app.command()
-def folder_directory(directory: str = typer.Argument(...),
-                        units: str = typer.Option(None, help="Set of units provided as a string seperated by a space."), 
-                            dry_run: bool = typer.Option(False, help="Run the script without creating any folders.")):
+def folder_directory(directory: str = typer.Argument(None, help="Directory to create folders at."),
+                        units: str = typer.Argument(None, help="Set of units provided as a string seperated by a space e.g. 'IFB102 IFB104'.", rich_help_panel="Secondary Arguments"), 
+                            dry_run: bool = typer.Option(False, "--dry-run", "-dr", help="Run the script without creating any folders.")):
+    """
+    Create a set of week folders (1-12) for UNITS at DIRECTORY
+    """
     global _dry_run 
 
     if directory[0] != '/':
