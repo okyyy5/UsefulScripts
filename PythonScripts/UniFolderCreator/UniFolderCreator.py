@@ -50,7 +50,7 @@ def folder_directory(directory: str = typer.Argument(None, help="Directory to cr
     global _dry_run 
 
     if directory == None:
-        print("WARNING:\tNo directory given, would you like to default to '~/' ($HOME)?")
+        print("WARNING:\tNo directory given, would you like to default to the current directory?")
         answer = input("(y/n): ")
 
         while answer not in ["y", "n"]:
@@ -61,9 +61,9 @@ def folder_directory(directory: str = typer.Argument(None, help="Directory to cr
             print("Please restart the application to enter a new path")
             exit()
         else:
-            directory = '~/'
-            
-    if directory[0] != '/':
+            directory = './'
+
+    if directory[0] != '/' and directory[0:2] != '~/' and directory[0:2] != './':
         print("ERROR:\tDirectory must start with a '/' or '~/'")
         exit()
 
@@ -81,7 +81,7 @@ def main(folder_dir: Path, units: str) -> None:
         if units != None:
             sub_folders: list = units.split()
 
-
+        print(folder_dir)
         # Check if chosen DIR doesn't exist
         if not folder_dir.exists():
             print(f"ERROR:\tFolder {folder_dir} does not exist! Would you like to create it?")
