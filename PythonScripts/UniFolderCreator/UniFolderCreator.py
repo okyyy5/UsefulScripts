@@ -81,7 +81,6 @@ def main(folder_dir: Path, units: str) -> None:
         if units != None:
             sub_folders: list = units.split()
 
-        print(folder_dir)
         # Check if chosen DIR doesn't exist
         if not folder_dir.exists():
             print(f"ERROR:\tFolder {folder_dir} does not exist! Would you like to create it?")
