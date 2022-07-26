@@ -11,7 +11,7 @@ from UniFolderCreator.callbacks import _version_callback, _dry_run_callback
 app = typer.Typer(add_completion=False)
 
 @app.command()
-def __init__(
+def main(
     version: bool = typer.Option(None, "--version", "-v", help="Show version", callback=_version_callback, is_eager=True),
       directory: str = typer.Argument(None, help="Directory to create folders at."),
         units: str = typer.Argument(None, help="Set of units provided as a string separated by a space e.g. 'IFB102 IFB104'.", rich_help_panel="Secondary Arguments"), 
@@ -30,9 +30,9 @@ def __init__(
 
     dir_exists(Path(directory))
 
-    main(Path(directory), units)
+    logic(Path(directory), units)
 
-def main(folder_dir: Path, units: str) -> None: 
+def logic(folder_dir: Path, units: str) -> None: 
     sub_folders: list = []
 
     try:
