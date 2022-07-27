@@ -5,15 +5,16 @@ def get_subdirectories(directory: Path) -> list[Path]:
     '''Returns each top-level subdirectory in a folder.'''
     return [f for f in directory.iterdir() if f.is_dir()]
 
-def make_directory(path: str) -> None:
+def make_directory(path: str) -> int:
     '''Creates a folder at the specified path.'''
     try:
         path.mkdir(parents=True, exist_ok=True)
     except Exception as e:
         print(coloured_message("red", f"ERROR: Folder {path} could not be created. {str(e)}"))
-        exit()
+        return -1
     else:
         print(coloured_message("green", f"SUCCESS: Folder {path} successfully created."))
+        return 0
 
 def make_directories(parent: Path, weeks: int, _dry_run: bool) -> None:
     '''Creates a folder for each week in the specified parent.'''
@@ -22,14 +23,15 @@ def make_directories(parent: Path, weeks: int, _dry_run: bool) -> None:
         full_path: Path = parent.joinpath(new_folder_name)
 
         if full_path.exists():
-            print(coloured_message("yellow", f"WARNING: Folder {full_path} already exists!"))
+            print("hi")
+            print(coloured_message("blue", f"INFO: Folder {full_path} already exists!"))
             pass
         else:
             try:
                 if not _dry_run:
                     full_path.mkdir(parents=True, exist_ok=True)
             except Exception as e:
-                print(coloured_message("red", f"ERROR:\tFolder {full_path} could not be created. {str(e)}"))
+                print(coloured_message("red", f"ERROR: Folder {full_path} could not be created. {str(e)}"))
 
 def dir_exists(directory: Path) -> bool:
   if not directory.exists():
@@ -42,7 +44,8 @@ def dir_exists(directory: Path) -> bool:
           answer = input("(y/n): ")
 
       if answer == "n":
-          print("Please restart the application to enter a new path")
+          print(coloured_message("red","ERROR: Please restart the application to enter a new path"))
           exit()
       elif answer == "y":
-          make_directory(directory)
+          if make_directory(directory) == -1:
+            exit()

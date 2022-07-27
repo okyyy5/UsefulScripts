@@ -13,7 +13,7 @@ app = typer.Typer(add_completion=False)
 @app.command()
 def main(
     version: bool = typer.Option(None, "--version", "-v", help="Show version", callback=_version_callback, is_eager=True),
-      directory: str = typer.Argument(None, help="Directory to create folders at."),
+      directory: Path = typer.Argument(None, help="Directory to create folders at."),
         units: str = typer.Argument(None, help="Set of units provided as a string separated by a space e.g. 'IFB102 IFB104'.", rich_help_panel="Secondary Arguments"), 
             dry_run: bool = typer.Option(False, "--dry-run", "-dr", help="Run the script without creating any folders.", callback=_dry_run_callback)):
     """
@@ -28,30 +28,20 @@ def main(
         print(coloured_message("red", "ERROR: Directory must start with a '/' or '~/' or './'"))
         exit()
 
-    dir_exists(Path(directory))
-
-    logic(Path(directory), units)
-
-def logic(folder_dir: Path, units: str) -> None: 
-    sub_folders: list = []
+    dir_exists(directory)
 
     try:
+        # Check if chosen DIR doesn't exist
+        dir_exists(directory)
+
+        # Create a subdirectory for each specified unit
         if units != None:
             sub_folders: list = units.split()
 
-        # Check if chosen DIR doesn't exist
-        dir_exists(folder_dir)
-
-        # Create a subdirectory for each specified unit
-        if len(sub_folders) > 0:
             for folder in sub_folders:
-                if not Path(f'{folder_dir}/{folder}').exists(): 
-                    try:
-                        os.makedirs(f'{folder_dir}/{folder}')
-                    except Exception as e:
-                        print(coloured_message("red", f"ERROR: Folder {folder} could not be created. {str(e)}"))
-                    else:
-                        print(coloured_message("green", f"SUCCESS: Folder {folder} successfully created."))
+                if not Path(f'{directory}/{folder}').exists():
+                    if make_directory(f'{directory}/{folder}') == -1:
+                      exit()
                 else:
                     print(coloured_message("blue", f"INFO: Folder {folder} already exists."))
                     
@@ -60,7 +50,7 @@ def logic(folder_dir: Path, units: str) -> None:
         exit()
 
     # Create a subfolder for each week of the semester for each subject folder.
-    subs = get_subdirectories(folder_dir)
+    subs = get_subdirectories(directory)
 
     if len(subs) == 0:
         print(coloured_message("red", "ERROR: Create the main folders for your respective classes before running script!"))
@@ -70,7 +60,7 @@ def logic(folder_dir: Path, units: str) -> None:
         make_directories(sub, __settings__.semester_weeks, __settings__.dry_run)
    
     print(coloured_message("blue", "\nINFO: Unit structure has been created"))
-    tree.ptree(f'{folder_dir}')
+    tree.ptree(f'{directory}')
     print("")
 
 
