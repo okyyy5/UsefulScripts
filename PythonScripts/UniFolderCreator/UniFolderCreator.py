@@ -4,7 +4,7 @@ from sys import exit
 from pathlib import Path
 
 SEMESTER_WEEKS: int = 12 # Modify this if needed
-DRY_RUN: bool = True
+DRY_RUN: bool = True # Change this to False or else it will only test run and not make any permanent changes.
 
 def main() -> None:
     # Directory path to wherever you have your folder for the semester.
