@@ -3,11 +3,19 @@
 
 Needs Python 3.10 but you can probably get away with less.
 
-Set the folder_dir variable to whatever the directory of your semester top level folder is. 
-For example, `C:\Users\Oktay\Google Drive\2022 Sem 1`
+By default the application is in Dry Run so it won't make any changes until you set it as follows:
+DRY_RUN: bool = False
 
 Set the semester_weeks variable to however many weeks there are in the semester. 
-For example, `14`
+For example, `13` - by default it is 12 weeks.
+
+Run the application from Command Line as follows:
+python UniFolderCreator.py (Directory path to your Folder Year such as 2022 Semester 1)
+
+Another example:
+python UniFolderCreator.py C:\Users\Gabe\Desktop\2022Semester1
+
+If the folder for your provided directory doesn't exist (such as 2022Semester1 not existing) then the script will prompt you with (y/n) to create it automatically, however, you must create the subject folders yourself. Best way to do it is making your directories as shown below before running the script.
 
 This is what your directory should look like before running the script.
 ```
